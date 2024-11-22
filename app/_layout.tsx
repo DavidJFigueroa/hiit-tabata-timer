@@ -1,37 +1,54 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
-
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+import {Stack} from "expo-router";
+import {TimersProvider} from "../contexts/TimersContext";
+import {ThemeProvider, useTheme} from "../contexts/ThemeContext";
+import {SoundProvider} from "../contexts/SoundContext";
+import {StatusBar} from "expo-status-bar";
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
+  const {theme} = useTheme();
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
+    <ThemeProvider>
+      <SoundProvider>
+        <TimersProvider>
+          <StatusBar style="light" />
+          <Stack>
+            <Stack.Screen
+              name="index"
+              options={{
+                title: "",
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="TimerConfigurationScreen"
+              options={{
+                title: "Timer Configuration",
+                headerStyle: {
+                  backgroundColor: theme.colors.background,
+                },
+                headerTintColor: theme.colors.text,
+              }}
+            />
+            <Stack.Screen
+              name="SoundPicker"
+              options={{
+                title: "Sound Settings",
+                headerStyle: {
+                  backgroundColor: theme.colors.background,
+                },
+                headerTintColor: theme.colors.text,
+              }}
+            />
+            <Stack.Screen
+              name="TimerRunScreen"
+              options={{
+                headerShown: false,
+              }}
+            />
+          </Stack>
+        </TimersProvider>
+      </SoundProvider>
     </ThemeProvider>
   );
 }
